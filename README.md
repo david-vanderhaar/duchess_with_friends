@@ -2,6 +2,7 @@
 This repo will use the following to allow peer-to-peer (serverless) play with friends:
   - svelte
   - peerjs
+  - konvajs
 The site will give us a a way to:
   - create a play room
   - join a play room
