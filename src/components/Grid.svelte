@@ -4,7 +4,8 @@
   export let height = 4;
   export let width = 4;
 
-  const grid_labels = ['A', 'B', 'C', 'D'];
+  // all letters in the alphabet
+  const grid_labels = Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i));
 </script>
 
 <div class='grid-container'>

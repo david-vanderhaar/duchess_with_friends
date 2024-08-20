@@ -1,29 +1,50 @@
 <script>
   import { Stage, Layer, Rect } from 'svelte-konva';
   import PEER from '../../data/peer';
+  // uuid
+  import { v4 as uuidv4 } from 'uuid';
+    import Grid from '../Grid.svelte';
+    import KonvaGrid from '../KonvaGrid.svelte';
 
   let roomId = '';
-  let rectConfig = { x: 100, y: 100, width: 400, height: 200, fill: 'blue', draggable: true };
+  let gameData = {
+    rects: [
+      {id: uuidv4(), x: 100, y: 100, width: 400, height: 200, fill: 'blue', draggable: true },
+      {id: uuidv4(), x: 300, y: 300, width: 400, height: 200, fill: 'red', draggable: true },
+    ],
+  }
 
   PEER.addOnIncomingDataHandler((data) => {
     console.log('incoming data handler');
-    rectConfig = data;
+    gameData = data;
   });
 
   // Function to handle changes in the Konva canvas
   function handleDragEnd(event) {
     console.log(event);
-    rectConfig = {
-      ...rectConfig,
-      x: event.detail.target.attrs.x,
-      y: event.detail.target.attrs.y
-    };
+    const rectId = event.detail.target.attrs.id;
+
+    gameData.rects = gameData.rects.map((rect) => {
+      if (rect.id === rectId) {
+        return {
+          ...rect,
+          x: event.detail.target.attrs.x,
+          y: event.detail.target.attrs.y
+        };
+      }
+      return rect;
+    });
 
     const connection = PEER.getOutgoingConnection();
     if (connection) {
-      connection.send(rectConfig);
-      console.log('sending', rectConfig);
+      connection.send(gameData);
+      console.log('sending', gameData);
     }
+  }
+
+  function handleDragMove(event) {
+    console.log('drag move', event);
+    handleDragEnd(event);
   }
 
   $: PEER;
@@ -31,10 +52,14 @@
 
 <Stage config={{ width: window.innerWidth, height: window.innerHeight }}>
   <Layer>
-    <Rect 
-      config={rectConfig} 
-      on:dragend={handleDragEnd}
-    />
+    <KonvaGrid height={6} width={6} />
+    {#each gameData.rects as rectConfig}
+      <Rect 
+        config={rectConfig} 
+        on:dragend={handleDragEnd}
+        on:dragmove={handleDragMove}
+      />
+    {/each}
   </Layer>
 </Stage>
 <div>
