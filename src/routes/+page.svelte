@@ -1,16 +1,39 @@
 <script>
   import { fade } from 'svelte/transition';
   import { base } from "$app/paths";
-  import Multiplayer from '../components/Multiplayer.svelte';
   import { goto } from '$app/navigation';
+  import PEER from '../data/peer';
 
-  // goto('/play');
+  let roomId = '';
+
+  function handleJoin() {
+    PEER.join(roomId);
+    goto(`${base}/play/${roomId}`);
+  }
+
 </script>
+
 <div transition:fade class='container'>
-  <a class="button is-primary" href="{base}/play">Play</a>
-  <!-- anchor tag to go to /play -->
-  <!-- <a class="button is-primary" href="{base}/play">Host</a>
-  <br>
-  <a class="button is-primary" href="{base}/play">Join</a>
-  <Multiplayer /> -->
+  <a class="button is-primary" href="{base}/play">Host</a>
+  <div class="multiplayer-input">
+    <input class="input" type="text" placeholder="Room ID" bind:value={roomId} />
+    <button 
+      class="button is-primary"
+      on:click={handleJoin}
+      disabled={!roomId.length}
+    >
+      Join
+    </button>
+  </div>
 </div>
+
+<style>
+  .multiplayer-input {
+    display: flex;
+    align-items: center;
+  }
+
+  .multiplayer-input input {
+    margin-right: 0.5rem;
+  }
+</style>
