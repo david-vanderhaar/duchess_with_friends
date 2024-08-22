@@ -7,21 +7,51 @@
     import KonvaGrid from '../KonvaGrid.svelte';
 
   let roomId = '';
+
+  const createRect = () => {
+    return {
+      x: 300,
+      y: 300,
+      width: 90,
+      height: 90,
+      // random color
+      fill: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+      // shadow blur radius
+      shadowBlur: 16,
+      // shadow offset
+      shadowOffset: {
+        x: 6,
+        y: 6
+      },
+      draggable: true
+    }
+  }
+
   let gameData = {
     rects: [
-      {id: uuidv4(), x: 100, y: 100, width: 400, height: 200, fill: 'blue', draggable: true },
-      {id: uuidv4(), x: 300, y: 300, width: 400, height: 200, fill: 'red', draggable: true },
+      {id: uuidv4(), ...createRect()},
+      {id: uuidv4(), ...createRect()},
     ],
   }
+
+
 
   PEER.addOnIncomingDataHandler((data) => {
     console.log('incoming data handler');
     gameData = data;
   });
 
+  function sendGameData() {
+    const connection = PEER.getOutgoingConnection();
+    if (connection) {
+      connection.send(gameData);
+      console.log('sending', gameData);
+    }
+  }
+
   // Function to handle changes in the Konva canvas
   function handleDragEnd(event) {
-    console.log(event);
+    // console.log(event);
     const rectId = event.detail.target.attrs.id;
 
     gameData.rects = gameData.rects.map((rect) => {
@@ -35,16 +65,61 @@
       return rect;
     });
 
-    const connection = PEER.getOutgoingConnection();
-    if (connection) {
-      connection.send(gameData);
-      console.log('sending', gameData);
-    }
+    sendGameData();
   }
 
   function handleDragMove(event) {
-    console.log('drag move', event);
+    // console.log('drag move', event);
     handleDragEnd(event);
+  }
+
+  function handleMouseOver(event) {
+    // console.log('mouse over', event);
+    // increase shadow blur and scale
+    const shape = event.detail.target;
+    shape.setAttrs({
+      shadowBlur: 20,
+      shadowOffset: {
+        x: 10,
+        y: 10
+      },
+    });
+
+    const rectId = event.detail.target.attrs.id;
+    const rect = gameData.rects.find((rect) => rect.id === rectId);
+    if (!rect) return;
+
+    rect.shadowBlur = 20;
+    rect.shadowOffset = {
+      x: 10,
+      y: 10
+    };
+
+    sendGameData();
+  }
+
+  function handleMouseOut(event) {
+    // reset shadow blur and scale
+    const shape = event.detail.target;
+    shape.setAttrs({
+      shadowBlur: 16,
+      shadowOffset: {
+        x: 6,
+        y: 6
+      },
+    });
+
+    const rectId = event.detail.target.attrs.id;
+    const rect = gameData.rects.find((rect) => rect.id === rectId);
+    if (!rect) return;
+
+    rect.shadowBlur = 16;
+    rect.shadowOffset = {
+      x: 6,
+      y: 6
+    };
+
+    sendGameData();
   }
 
   $: PEER;
@@ -55,9 +130,13 @@
     <KonvaGrid height={6} width={6} />
     {#each gameData.rects as rectConfig}
       <Rect 
-        config={rectConfig} 
-        on:dragend={handleDragEnd}
+        config={rectConfig}
+        on:mousedown={handleMouseOver}
+        on:mouseup={handleMouseOut}
+        on:mouseover={handleMouseOver}
+        on:mouseout={handleMouseOut}
         on:dragmove={handleDragMove}
+        on:dragend={handleDragEnd}
       />
     {/each}
   </Layer>
