@@ -16,7 +16,7 @@
     }
   }, 100);
   
-  const createRect = (image, x, y) => {
+  const createTile = ({image, x, y, upsideDown = false}) => {
     // x and y should be random
     const randomX = Math.random() * 600;
     const randomY = Math.random() * 600;
@@ -25,6 +25,9 @@
       y: y || randomY,
       width: 90,
       height: 90,
+      // rotation: upsideDown ? 180 : 0,
+      scaleY: upsideDown ? -1 : 1,
+      scaleX: upsideDown ? -1 : 1,
       image,
       // random color
       fill: `#${Math.floor(Math.random()*16777215).toString(16)}`,
@@ -40,10 +43,13 @@
   }
 
   let gameData = {
-    rects: [
-      {id: uuidv4(), ...createRect('FootmanFrontElement', 204, 401)},
-      {id: uuidv4(), ...createRect('FootmanFrontElement', 301, 502)},
-      {id: uuidv4(), ...createRect('DukeFrontElement', 202, 502)},
+    tiles: [
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 204, y: 401})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 301, y: 502})},
+      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', x: 202, y: 502})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 294, y: 191, upsideDown: true})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 396, y: 92, upsideDown: true})},
+      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', x: 293, y: 100, upsideDown: true})},
     ],
   }
 
@@ -63,17 +69,17 @@
   // Function to handle changes in the Konva canvas
   function handleDragEnd(event) {
     // console.log(event);
-    const rectId = event.detail.target.attrs.id;
+    const tileId = event.detail.target.attrs.id;
 
-    gameData.rects = gameData.rects.map((rect) => {
-      if (rect.id === rectId) {
+    gameData.tiles = gameData.tiles.map((tile) => {
+      if (tile.id === tileId) {
         return {
-          ...rect,
+          ...tile,
           x: event.detail.target.attrs.x,
           y: event.detail.target.attrs.y
         };
       }
-      return rect;
+      return tile;
     });
 
     sendGameData();
@@ -96,12 +102,14 @@
       },
     });
 
-    const rectId = event.detail.target.attrs.id;
-    const rect = gameData.rects.find((rect) => rect.id === rectId);
-    if (!rect) return;
+    console.log(shape.x(), shape.y());
 
-    rect.shadowBlur = 20;
-    rect.shadowOffset = {
+    const tileId = event.detail.target.attrs.id;
+    const tile = gameData.tiles.find((tile) => tile.id === tileId);
+    if (!tile) return;
+
+    tile.shadowBlur = 20;
+    tile.shadowOffset = {
       x: 10,
       y: 10
     };
@@ -120,29 +128,36 @@
       },
     });
 
-    const rectId = event.detail.target.attrs.id;
-    const rect = gameData.rects.find((rect) => rect.id === rectId);
-    if (!rect) return;
+    const tileId = event.detail.target.attrs.id;
+    const tile = gameData.tiles.find((tile) => tile.id === tileId);
+    if (!tile) return;
 
-    rect.shadowBlur = 16;
-    rect.shadowOffset = {
+    tile.shadowBlur = 16;
+    tile.shadowOffset = {
       x: 6,
       y: 6
     };
 
     sendGameData();
   }
+  let layerConfig = {};
+  setTimeout(() => {
+    if (!PEER.isHost()) {
+      layerConfig = {scaleY: -1, scaleX: -1, x: 600, y: 600}
+    }
+  }, 1000);
 
   $: PEER;
+
 </script>
 
 <Stage config={{ width: window.innerWidth, height: window.innerHeight }}>
-  <Layer>
+  <Layer config={layerConfig}>
     <KonvaGrid height={6} width={6} />
     {#if loaded}
-      {#each gameData.rects as rectConfig}
+      {#each gameData.tiles as tileConfig}
         <Image 
-          config={{...rectConfig, image: DukeImages[rectConfig.image]}}
+          config={{...tileConfig, image: DukeImages[tileConfig.image]}}
           on:mousedown={handleMouseOver}
           on:mouseup={handleMouseOut}
           on:mouseover={handleMouseOver}
@@ -188,7 +203,7 @@
 
   .multiplayer-container {
     display: flex;
-    flex-direction: column;
+    flex-ditileion: column;
     align-items: center;
   }
 </style>
