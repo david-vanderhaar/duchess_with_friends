@@ -1,19 +1,31 @@
 <script>
-  import { Stage, Layer, Rect } from 'svelte-konva';
+  import { Stage, Layer, Rect, Image } from 'svelte-konva';
   import PEER from '../../data/peer';
-  // uuid
   import { v4 as uuidv4 } from 'uuid';
-    import Grid from '../Grid.svelte';
-    import KonvaGrid from '../KonvaGrid.svelte';
+  import KonvaGrid from '../KonvaGrid.svelte';
+  import DukeImages from '../../assets/duke/index';
 
   let roomId = '';
+  let loaded = false;
 
-  const createRect = () => {
+  // check if allLoaded is true by interval until it is true
+  const checkLoaded = setInterval(() => {
+    if (DukeImages.allLoaded()) {
+      loaded = true;
+      clearInterval(checkLoaded);
+    }
+  }, 100);
+  
+  const createRect = (image, x, y) => {
+    // x and y should be random
+    const randomX = Math.random() * 600;
+    const randomY = Math.random() * 600;
     return {
-      x: 300,
-      y: 300,
+      x: x || randomX,
+      y: y || randomY,
       width: 90,
       height: 90,
+      image,
       // random color
       fill: `#${Math.floor(Math.random()*16777215).toString(16)}`,
       // shadow blur radius
@@ -29,12 +41,11 @@
 
   let gameData = {
     rects: [
-      {id: uuidv4(), ...createRect()},
-      {id: uuidv4(), ...createRect()},
+      {id: uuidv4(), ...createRect('FootmanFrontElement', 204, 401)},
+      {id: uuidv4(), ...createRect('FootmanFrontElement', 301, 502)},
+      {id: uuidv4(), ...createRect('DukeFrontElement', 202, 502)},
     ],
   }
-
-
 
   PEER.addOnIncomingDataHandler((data) => {
     console.log('incoming data handler');
@@ -128,17 +139,19 @@
 <Stage config={{ width: window.innerWidth, height: window.innerHeight }}>
   <Layer>
     <KonvaGrid height={6} width={6} />
-    {#each gameData.rects as rectConfig}
-      <Rect 
-        config={rectConfig}
-        on:mousedown={handleMouseOver}
-        on:mouseup={handleMouseOut}
-        on:mouseover={handleMouseOver}
-        on:mouseout={handleMouseOut}
-        on:dragmove={handleDragMove}
-        on:dragend={handleDragEnd}
-      />
-    {/each}
+    {#if loaded}
+      {#each gameData.rects as rectConfig}
+        <Image 
+          config={{...rectConfig, image: DukeImages[rectConfig.image]}}
+          on:mousedown={handleMouseOver}
+          on:mouseup={handleMouseOut}
+          on:mouseover={handleMouseOver}
+          on:mouseout={handleMouseOut}
+          on:dragmove={handleDragMove}
+          on:dragend={handleDragEnd}
+        />
+      {/each}
+    {/if}
   </Layer>
 </Stage>
 <div>
