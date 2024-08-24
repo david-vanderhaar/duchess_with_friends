@@ -211,16 +211,6 @@
 </Stage>
 <div>
   <div class="multiplayer-container">
-    <div class="multiplayer-input">
-      <input class="input" type="text" placeholder="Room ID" bind:value={roomId} />
-      <button 
-        class="button is-primary"
-        on:click={() => PEER.join(roomId)}
-        disabled={!roomId.length}
-      >
-        Connect
-      </button>
-    </div>
     <div>My Room: {PEER.getMyRoomId()}</div>
     {#if PEER.getJoinedRoomId()}
       <div>Connected to {PEER.getJoinedRoomId()}</div>
