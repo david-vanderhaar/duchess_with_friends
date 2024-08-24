@@ -16,7 +16,14 @@
     }
   }, 100);
   
-  const createTile = ({image, x, y, upsideDown = false}) => {
+  const createTile = ({
+    image,
+    flippedImage,
+    flipped = false,
+    x, 
+    y, 
+    upsideDown = false
+  }) => {
     // x and y should be random
     const randomX = Math.random() * 600;
     const randomY = Math.random() * 600;
@@ -28,7 +35,9 @@
       // rotation: upsideDown ? 180 : 0,
       scaleY: upsideDown ? -1 : 1,
       scaleX: upsideDown ? -1 : 1,
-      image,
+      image: flipped ? flippedImage : image,
+      frontImage: image,
+      flippedImage,
       // random color
       fill: `#${Math.floor(Math.random()*16777215).toString(16)}`,
       // shadow blur radius
@@ -44,12 +53,12 @@
 
   let gameData = {
     tiles: [
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 204, y: 401})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 301, y: 502})},
-      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', x: 202, y: 502})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 294, y: 191, upsideDown: true})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', x: 396, y: 92, upsideDown: true})},
-      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', x: 293, y: 100, upsideDown: true})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502})},
+      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 202, y: 502})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 294, y: 191, upsideDown: true})},
+      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 396, y: 92, upsideDown: true})},
+      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 293, y: 100, upsideDown: true})},
     ],
   }
 
@@ -140,12 +149,35 @@
 
     sendGameData();
   }
+
+  function handleDoubleClick(event) {
+    // get the tile that was double clicked
+    // set the tile to !flipped
+    const shape = event.detail.target;
+    const flipped = !shape.attrs.flipped;
+    shape.setAttrs({
+      image: DukeImages[flipped ? shape.attrs.flippedImage : shape.attrs.frontImage],
+      flipped
+    });
+
+    const tileId = shape.attrs.id;
+    const tile = gameData.tiles.find((tile) => tile.id === tileId);
+    if (!tile) return;
+
+    tile.flipped = !tile.flipped;
+    tile.image = tile.flipped ? tile.flippedImage : tile.frontImage;
+
+    sendGameData();
+  }
+
+  // hack to read changes to PEER.isHost()
   let layerConfig = {};
   setTimeout(() => {
     if (!PEER.isHost()) {
       layerConfig = {scaleY: -1, scaleX: -1, x: 600, y: 600}
     }
-  }, 1000);
+  }, 500);
+  // end hack
 
   $: PEER;
 
@@ -164,6 +196,7 @@
           on:mouseout={handleMouseOut}
           on:dragmove={handleDragMove}
           on:dragend={handleDragEnd}
+          on:dblclick={handleDoubleClick}
         />
       {/each}
     {/if}
@@ -203,7 +236,7 @@
 
   .multiplayer-container {
     display: flex;
-    flex-ditileion: column;
+    flex-direction: column;
     align-items: center;
   }
 </style>
