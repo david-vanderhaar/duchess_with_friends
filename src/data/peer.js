@@ -27,7 +27,7 @@ peer.on('open', (id) => {
 
 peer.on('connection', function(conn) {
   conn.on('data', function(data){
-    console.log('Received', data);
+    // console.log('Received', data);
     if (typeof data === 'string' && data.match(/hi! I'm/)) {
       if (state.joinedRoomId !== null) {
         console.log('Already connected to a room');

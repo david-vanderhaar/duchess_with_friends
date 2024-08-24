@@ -110,7 +110,7 @@
   }
 
   PEER.addOnIncomingDataHandler((data) => {
-    console.log('incoming data handler');
+    // console.log('incoming data handler');
     gameData = data;
   });
 
@@ -118,7 +118,7 @@
     const connection = PEER.getOutgoingConnection();
     if (connection) {
       connection.send(gameData);
-      console.log('sending', gameData);
+      // console.log('sending', gameData);
     }
   }
 
