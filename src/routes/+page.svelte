@@ -8,7 +8,7 @@
 
   function handleJoin() {
     PEER.join(roomId);
-    goto(`${base}/play/${roomId}`);
+    goto(`${base}/play/`);
   }
 
 </script>
