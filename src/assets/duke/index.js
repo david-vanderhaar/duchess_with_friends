@@ -62,181 +62,181 @@ const loaded = {
   WizardBack: false,
 }
 
-const AssassinFrontElement = document.createElement('img');
+const AssassinFrontElement = window.document.createElement('img');
 AssassinFrontElement.src = AssassinFront;
 AssassinFrontElement.onload = () => {
   loaded.AssassinFront = true;
 }
 
-const AssassinBackElement = document.createElement('img');
+const AssassinBackElement = window.document.createElement('img');
 AssassinBackElement.src = AssassinBack;
 AssassinBackElement.onload = () => {
   loaded.AssassinBack = true;
 }
 
-const BowmanFrontElement = document.createElement('img');
+const BowmanFrontElement = window.document.createElement('img');
 BowmanFrontElement.src = BowmanFront;
 BowmanFrontElement.onload = () => {
   loaded.BowmanFront = true;
 }
 
-const BowmanBackElement = document.createElement('img');
+const BowmanBackElement = window.document.createElement('img');
 BowmanBackElement.src = BowmanBack;
 BowmanBackElement.onload = () => {
   loaded.BowmanBack = true;
 }
 
-const ChampionFrontElement = document.createElement('img');
+const ChampionFrontElement = window.document.createElement('img');
 ChampionFrontElement.src = ChampionFront;
 ChampionFrontElement.onload = () => {
   loaded.ChampionFront = true;
 }
 
-const ChampionBackElement = document.createElement('img');
+const ChampionBackElement = window.document.createElement('img');
 ChampionBackElement.src = ChampionBack;
 ChampionBackElement.onload = () => {
   loaded.ChampionBack = true;
 }
 
-const DragoonFrontElement = document.createElement('img');
+const DragoonFrontElement = window.document.createElement('img');
 DragoonFrontElement.src = DragoonFront;
 DragoonFrontElement.onload = () => {
   loaded.DragoonFront = true;
 }
 
-const DragoonBackElement = document.createElement('img');
+const DragoonBackElement = window.document.createElement('img');
 DragoonBackElement.src = DragoonBack;
 DragoonBackElement.onload = () => {
   loaded.DragoonBack = true;
 }
 
-const DukeFrontElement = document.createElement('img');
+const DukeFrontElement = window.document.createElement('img');
 DukeFrontElement.src = DukeFront;
 DukeFrontElement.onload = () => {
   loaded.DukeFront = true;
 }
 
-const DukeBackElement = document.createElement('img');
+const DukeBackElement = window.document.createElement('img');
 DukeBackElement.src = DukeBack;
 DukeBackElement.onload = () => {
   loaded.DukeBack = true;
 }
 
-const FootmanFrontElement = document.createElement('img');
+const FootmanFrontElement = window.document.createElement('img');
 FootmanFrontElement.src = FootmanFront;
 FootmanFrontElement.onload = () => {
   loaded.FootmanFront = true;
 }
 
-const FootmanBackElement = document.createElement('img');
+const FootmanBackElement = window.document.createElement('img');
 FootmanBackElement.src = FootmanBack;
 FootmanBackElement.onload = () => {
   loaded.FootmanBack = true;
 }
 
-const GeneralFrontElement = document.createElement('img');
+const GeneralFrontElement = window.document.createElement('img');
 GeneralFrontElement.src = GeneralFront;
 GeneralFrontElement.onload = () => {
   loaded.GeneralFront = true;
 }
 
-const GeneralBackElement = document.createElement('img');
+const GeneralBackElement = window.document.createElement('img');
 GeneralBackElement.src = GeneralBack;
 GeneralBackElement.onload = () => {
   loaded.GeneralBack = true;
 }
 
-const KnightFrontElement = document.createElement('img');
+const KnightFrontElement = window.document.createElement('img');
 KnightFrontElement.src = KnightFront;
 KnightFrontElement.onload = () => {
   loaded.KnightFront = true;
 }
 
-const KnightBackElement = document.createElement('img');
+const KnightBackElement = window.document.createElement('img');
 KnightBackElement.src = KnightBack;
 KnightBackElement.onload = () => {
   loaded.KnightBack = true;
 }
 
-const LongbowmanFrontElement = document.createElement('img');
+const LongbowmanFrontElement = window.document.createElement('img');
 LongbowmanFrontElement.src = LongbowmanFront;
 LongbowmanFrontElement.onload = () => {
   loaded.LongbowmanFront = true;
 }
 
-const LongbowmanBackElement = document.createElement('img');
+const LongbowmanBackElement = window.document.createElement('img');
 LongbowmanBackElement.src = LongbowmanBack;
 LongbowmanBackElement.onload = () => {
   loaded.LongbowmanBack = true;
 }
 
-const MarshallFrontElement = document.createElement('img');
+const MarshallFrontElement = window.document.createElement('img');
 MarshallFrontElement.src = MarshallFront;
 MarshallFrontElement.onload = () => {
   loaded.MarshallFront = true;
 }
 
-const MarshallBackElement = document.createElement('img');
+const MarshallBackElement = window.document.createElement('img');
 MarshallBackElement.src = MarshallBack;
 MarshallBackElement.onload = () => {
   loaded.MarshallBack = true;
 }
 
-const PikemanFrontElement = document.createElement('img');
+const PikemanFrontElement = window.document.createElement('img');
 PikemanFrontElement.src = PikemanFront;
 PikemanFrontElement.onload = () => {
   loaded.PikemanFront = true;
 }
 
-const PikemanBackElement = document.createElement('img');
+const PikemanBackElement = window.document.createElement('img');
 PikemanBackElement.src = PikemanBack;
 PikemanBackElement.onload = () => {
   loaded.PikemanBack = true;
 }
 
-const PriestFrontElement = document.createElement('img');
+const PriestFrontElement = window.document.createElement('img');
 PriestFrontElement.src = PriestFront;
 PriestFrontElement.onload = () => {
   loaded.PriestFront = true;
 }
 
-const PriestBackElement = document.createElement('img');
+const PriestBackElement = window.document.createElement('img');
 PriestBackElement.src = PriestBack;
 PriestBackElement.onload = () => {
   loaded.PriestBack = true;
 }
 
-const RangerFrontElement = document.createElement('img');
+const RangerFrontElement = window.document.createElement('img');
 RangerFrontElement.src = RangerFront;
 RangerFrontElement.onload = () => {
   loaded.RangerFront = true;
 }
 
-const RangerBackElement = document.createElement('img');
+const RangerBackElement = window.document.createElement('img');
 RangerBackElement.src = RangerBack;
 RangerBackElement.onload = () => {
   loaded.RangerBack = true;
 }
 
-const SeerFrontElement = document.createElement('img');
+const SeerFrontElement = window.document.createElement('img');
 SeerFrontElement.src = SeerFront;
 SeerFrontElement.onload = () => {
   loaded.SeerFront = true;
 }
 
-const SeerBackElement = document.createElement('img');
+const SeerBackElement = window.document.createElement('img');
 SeerBackElement.src = SeerBack;
 SeerBackElement.onload = () => {
   loaded.SeerBack = true;
 }
 
-const WizardFrontElement = document.createElement('img');
+const WizardFrontElement = window.document.createElement('img');
 WizardFrontElement.src = WizardFront;
 WizardFrontElement.onload = () => {
   loaded.WizardFront = true;
 }
 
-const WizardBackElement = document.createElement('img');
+const WizardBackElement = window.document.createElement('img');
 WizardBackElement.src = WizardBack;
 WizardBackElement.onload = () => {
   loaded.WizardBack = true;

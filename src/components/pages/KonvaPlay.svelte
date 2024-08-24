@@ -4,10 +4,16 @@
   import { v4 as uuidv4 } from 'uuid';
   import KonvaGrid from '../KonvaGrid.svelte';
   import DukeImages from '../../assets/duke/index';
+  import { onMount } from 'svelte';
 
   let roomId = '';
   let loaded = false;
+  let window = null;
 
+  onMount(() => {
+    window = window;
+  });
+  
   // check if allLoaded is true by interval until it is true
   const checkLoaded = setInterval(() => {
     if (DukeImages.allLoaded()) {
@@ -27,7 +33,7 @@
     // x and y should be random
     const randomX = Math.random() * 600;
     const randomY = Math.random() * 600;
-    return {
+    let tile = {
       x: x || randomX,
       y: y || randomY,
       width: 90,
@@ -47,8 +53,10 @@
         x: 6,
         y: 6
       },
-      draggable: true
+      draggable: true,
     }
+
+    return tile;
   }
 
   let gameData = {
@@ -75,21 +83,49 @@
     }
   }
 
-  // Function to handle changes in the Konva canvas
-  function handleDragEnd(event) {
-    // console.log(event);
-    const tileId = event.detail.target.attrs.id;
-
+  function updateTileFromEvent(attrs, konvaShape, tileId, skipKonvaShapeUpdate = false) {
     gameData.tiles = gameData.tiles.map((tile) => {
-      if (tile.id === tileId) {
-        return {
-          ...tile,
-          x: event.detail.target.attrs.x,
-          y: event.detail.target.attrs.y
-        };
-      }
-      return tile;
+      if (tile.id !== tileId) return tile;
+      return {
+        ...tile,
+        ...attrs
+      };
     });
+
+    if (skipKonvaShapeUpdate) return;
+    konvaShape.setAttrs({...attrs, image: DukeImages[attrs.image]});
+  }
+
+  function flipTile(event) {
+    const shape = event.detail.target;
+    const tile = shape.attrs;
+    const tileId = shape.attrs.id;
+
+    const flipped = !tile.flipped;
+
+    updateTileFromEvent(
+      {
+        flipped,
+        image: flipped ? tile.flippedImage : tile.frontImage
+      },
+      shape,
+      tileId
+    );
+  }
+
+  function handleDragEnd(event) {
+    const shape = event.detail.target;
+    const tileId = shape.attrs.id;
+
+    updateTileFromEvent(
+      {
+        x: shape.attrs.x,
+        y: shape.attrs.y,
+      },
+      shape,
+      tileId,
+      true
+    );
 
     sendGameData();
   }
@@ -100,90 +136,61 @@
   }
 
   function handleMouseOver(event) {
-    // console.log('mouse over', event);
-    // increase shadow blur and scale
     const shape = event.detail.target;
-    shape.setAttrs({
-      shadowBlur: 20,
-      shadowOffset: {
-        x: 10,
-        y: 10
+    const tileId = shape.attrs.id;
+
+    updateTileFromEvent(
+      {
+        shadowBlur: 20,
+        shadowOffset: {
+          x: 10,
+          y: 10
+        },
       },
-    });
-
-    console.log(shape.x(), shape.y());
-
-    const tileId = event.detail.target.attrs.id;
-    const tile = gameData.tiles.find((tile) => tile.id === tileId);
-    if (!tile) return;
-
-    tile.shadowBlur = 20;
-    tile.shadowOffset = {
-      x: 10,
-      y: 10
-    };
+      shape,
+      tileId
+    );
 
     sendGameData();
   }
 
   function handleMouseOut(event) {
-    // reset shadow blur and scale
     const shape = event.detail.target;
-    shape.setAttrs({
-      shadowBlur: 16,
-      shadowOffset: {
-        x: 6,
-        y: 6
+    const tileId = shape.attrs.id;
+
+    updateTileFromEvent(
+      {
+        shadowBlur: 16,
+        shadowOffset: {
+          x: 6,
+          y: 6
+        },
       },
-    });
-
-    const tileId = event.detail.target.attrs.id;
-    const tile = gameData.tiles.find((tile) => tile.id === tileId);
-    if (!tile) return;
-
-    tile.shadowBlur = 16;
-    tile.shadowOffset = {
-      x: 6,
-      y: 6
-    };
-
+      shape,
+      tileId
+    );
+    
     sendGameData();
   }
 
   function handleDoubleClick(event) {
-    // get the tile that was double clicked
-    // set the tile to !flipped
-    const shape = event.detail.target;
-    const flipped = !shape.attrs.flipped;
-    shape.setAttrs({
-      image: DukeImages[flipped ? shape.attrs.flippedImage : shape.attrs.frontImage],
-      flipped
-    });
-
-    const tileId = shape.attrs.id;
-    const tile = gameData.tiles.find((tile) => tile.id === tileId);
-    if (!tile) return;
-
-    tile.flipped = !tile.flipped;
-    tile.image = tile.flipped ? tile.flippedImage : tile.frontImage;
-
+    flipTile(event)
     sendGameData();
   }
 
   // hack to read changes to PEER.isHost()
   let layerConfig = {};
   setTimeout(() => {
-    if (!PEER.isHost()) {
+    if (PEER.getOutgoingConnection() && !PEER.isHost()) {
       layerConfig = {scaleY: -1, scaleX: -1, x: 600, y: 600}
     }
   }, 500);
   // end hack
 
   $: PEER;
-
 </script>
 
-<Stage config={{ width: window.innerWidth, height: window.innerHeight }}>
+<Stage config={{ width: window?.innerWidth || 800, height: window?.innerHeight || 800 }}>
   <Layer config={layerConfig}>
     <KonvaGrid height={6} width={6} />
     {#if loaded}
