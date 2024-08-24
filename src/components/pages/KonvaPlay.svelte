@@ -34,6 +34,7 @@
     const randomX = Math.random() * 600;
     const randomY = Math.random() * 600;
     let tile = {
+      id: uuidv4(),
       x: x || randomX,
       y: y || randomY,
       width: 90,
@@ -54,20 +55,58 @@
         y: 6
       },
       draggable: true,
+      gameDataPath: 'tiles',
     }
 
     return tile;
   }
 
+  const createBag = ({x, y, color, upsideDown = false}) => {
+    const id = uuidv4();
+    return {
+      id,
+      x,
+      y,
+      width: 100,
+      height: 100,
+      fill: color,
+      draggable: true,
+      gameDataPath: 'bags',
+      tiles: [
+        createTile({bagId: id, image: 'AssassinFrontElement', flippedImage: 'AssassinBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'BowmanFrontElement', flippedImage: 'BowmanBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'ChampionFrontElement', flippedImage: 'ChampionBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'DragoonFrontElement', flippedImage: 'DragoonBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'GeneralFrontElement', flippedImage: 'GeneralBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'KnightFrontElement', flippedImage: 'KnightBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'LongbowmanFrontElement', flippedImage: 'LongbowmanBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'MarshallFrontElement', flippedImage: 'MarshallBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'PikemanFrontElement', flippedImage: 'PikemanBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'PikemanFrontElement', flippedImage: 'PikemanBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'PriestFrontElement', flippedImage: 'PriestBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'RangerFrontElement', flippedImage: 'RangerBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'SeerFrontElement', flippedImage: 'SeerBackElement', x: 214, y: 246, upsideDown}),
+        createTile({bagId: id, image: 'WizardFrontElement', flippedImage: 'WizardBackElement', x: 214, y: 246, upsideDown}),
+      ],
+    }
+  }
+
+  const bags = [
+    createBag({x: 100, y: 100, color: 'red'}),
+    createBag({x: 200, y: 200, color: 'blue', upsideDown: true}),
+  ]
+
   let gameData = {
     tiles: [
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502})},
-      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 202, y: 502})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 294, y: 191, upsideDown: true})},
-      {id: uuidv4(), ...createTile({image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 396, y: 92, upsideDown: true})},
-      {id: uuidv4(), ...createTile({image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 293, y: 100, upsideDown: true})},
+      createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401}),
+      createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502}),
+      createTile({bagId: bags.at(0), image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 202, y: 502}),
+      createTile({bagId: bags.at(1), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 294, y: 191, upsideDown: true}),
+      createTile({bagId: bags.at(1), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 396, y: 92, upsideDown: true}),
+      createTile({bagId: bags.at(1), image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 293, y: 100, upsideDown: true}),
     ],
+    bags,
   }
 
   PEER.addOnIncomingDataHandler((data) => {
@@ -83,8 +122,15 @@
     }
   }
 
-  function updateTileFromEvent(attrs, konvaShape, tileId, skipKonvaShapeUpdate = false) {
-    gameData.tiles = gameData.tiles.map((tile) => {
+  function updateGameDataItemFromEvent({
+    attrs,
+    konvaShape,
+    skipKonvaShapeUpdate = false
+  }) {
+    const tileId = konvaShape.attrs.id;
+    const gameDataPath = konvaShape.attrs.gameDataPath;
+
+    gameData[gameDataPath] = gameData[gameDataPath].map((tile) => {
       if (tile.id !== tileId) return tile;
       return {
         ...tile,
@@ -99,33 +145,29 @@
   function flipTile(event) {
     const shape = event.detail.target;
     const tile = shape.attrs;
-    const tileId = shape.attrs.id;
 
     const flipped = !tile.flipped;
 
-    updateTileFromEvent(
-      {
+    updateGameDataItemFromEvent({
+      attrs: {
         flipped,
         image: flipped ? tile.flippedImage : tile.frontImage
       },
-      shape,
-      tileId
-    );
+      konvaShape: shape,
+    });
   }
 
   function handleDragEnd(event) {
     const shape = event.detail.target;
-    const tileId = shape.attrs.id;
 
-    updateTileFromEvent(
-      {
+    updateGameDataItemFromEvent({
+      attrs:{
         x: shape.attrs.x,
         y: shape.attrs.y,
       },
-      shape,
-      tileId,
-      true
-    );
+      konvaShape: shape,
+      skipKonvaShapeUpdate: true
+    });
 
     sendGameData();
   }
@@ -137,44 +179,72 @@
 
   function handleMouseOver(event) {
     const shape = event.detail.target;
-    const tileId = shape.attrs.id;
 
-    updateTileFromEvent(
-      {
+    updateGameDataItemFromEvent({
+      attrs: {
         shadowBlur: 20,
         shadowOffset: {
           x: 10,
           y: 10
         },
       },
-      shape,
-      tileId
-    );
+      konvaShape: shape,
+    });
 
     sendGameData();
   }
 
   function handleMouseOut(event) {
     const shape = event.detail.target;
-    const tileId = shape.attrs.id;
 
-    updateTileFromEvent(
-      {
+    updateGameDataItemFromEvent({
+      attrs: {
         shadowBlur: 16,
         shadowOffset: {
           x: 6,
           y: 6
         },
       },
-      shape,
-      tileId
-    );
+      konvaShape: shape,
+    });
     
     sendGameData();
   }
 
   function handleDoubleClick(event) {
     flipTile(event)
+    sendGameData();
+  }
+
+  function handleDoubleClickBag(event) {
+    const shape = event.detail.target;
+    const bagId = shape.attrs.id;
+
+    // remove first tile from bag
+    // and add it to the tiles array
+    const bag = gameData.bags.find(bag => bag.id === bagId);
+    // if bag is empty, do nothing
+    // TODO: give visual feedback that the bag is empty
+    if (!bag.tiles.length) return;
+
+    // get random tile from bag
+    const randomIndex = Math.floor(Math.random() * bag.tiles.length);
+    const tile = bag.tiles[randomIndex];
+    const updatedBagTiles = bag.tiles.filter((_, index) => index !== randomIndex);
+    const updatedTiles = [...gameData.tiles, tile];
+
+    gameData = {
+      ...gameData,
+      tiles: updatedTiles,
+      bags: gameData.bags.map(bag => {
+        if (bag.id !== bagId) return bag;
+        return {
+          ...bag,
+          tiles: updatedBagTiles,
+        }
+      }),
+    }
+
     sendGameData();
   }
 
@@ -206,6 +276,14 @@
           on:dblclick={handleDoubleClick}
         />
       {/each}
+      {#each gameData.bags as bagConfig}
+        <Rect 
+          config={bagConfig}
+          on:dragmove={handleDragMove}
+          on:dragend={handleDragEnd}
+          on:dblclick={handleDoubleClickBag}
+        />
+      {/each}
     {/if}
   </Layer>
 </Stage>
@@ -216,7 +294,7 @@
       <div>Connected to {PEER.getJoinedRoomId()}</div>
     {/if}
     {#if PEER.isHost()}
-      <div>You are the Host</div>
+      <div class="host-icon has-background-primary">You are the Host</div>
     {/if}
   </div>
 </div>
@@ -232,8 +310,15 @@
   }
 
   .multiplayer-container {
+    position: relative;
+    top: 620px;
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .host-icon {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
   }
 </style>
