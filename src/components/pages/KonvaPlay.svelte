@@ -9,6 +9,7 @@
   import { onMount } from 'svelte';
   import Tile from '../Tile.svelte';
   import Bag from '../Bag.svelte';
+    import { empty, is_empty } from 'svelte/internal';
 
   let roomId = '';
   let loaded = false;
@@ -43,6 +44,7 @@
       y: y || randomY,
       width: 90,
       height: 90,
+      upsideDown,
       // rotation: upsideDown ? 180 : 0,
       scaleY: upsideDown ? -1 : 1,
       scaleX: upsideDown ? -1 : 1,
@@ -73,7 +75,13 @@
       y,
       width: 100,
       height: 100,
-      fill: color,
+      images: {
+        closed: upsideDown ? 'BagClosedElement' : 'BagClosedElementBlack',
+        open: upsideDown ? 'BagOpenElement' : 'BagOpenElementBlack',
+        empty: upsideDown ? 'BagEmptyElement' : 'BagEmptyElementBlack',
+      },
+      state: 'closed',
+      upsideDown,
       draggable: true,
       gameDataPath: 'bags',
       tiles: [

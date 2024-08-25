@@ -28,6 +28,12 @@ import SeerFront from './seer_front.png';
 import SeerBack from './seer_back.png';
 import WizardFront from './wizard_front.png';
 import WizardBack from './wizard_back.png';
+import BagClosed from './paper-bag-folded.png'
+import BagClosedBlack from './paper-bag-folded-black.png'
+import BagOpen from './paper-bag-open.png'
+import BagOpenBlack from './paper-bag-open-black.png'
+import BagEmpty from './paper-bag-crumpled.png'
+import BagEmptyBlack from './paper-bag-crumpled-black.png'
 
 const loaded = {
   AssassinFront: false,
@@ -60,6 +66,12 @@ const loaded = {
   SeerBack: false,
   WizardFront: false,
   WizardBack: false,
+  BagClosed: false,
+  BagOpen: false,
+  BagEmpty: false,
+  BagClosedBlack: false,
+  BagOpenBlack: false,
+  BagEmptyBlack: false,
 }
 
 const AssassinFrontElement = window.document.createElement('img');
@@ -242,12 +254,49 @@ WizardBackElement.onload = () => {
   loaded.WizardBack = true;
 }
 
+const BagClosedElement = window.document.createElement('img');
+BagClosedElement.src = BagClosed;
+BagClosedElement.onload = () => {
+  loaded.BagClosed = true;
+}
+
+const BagOpenElement = window.document.createElement('img');
+BagOpenElement.src = BagOpen;
+BagOpenElement.onload = () => {
+  loaded.BagOpen = true;
+}
+
+const BagEmptyElement = window.document.createElement('img');
+BagEmptyElement.src = BagEmpty;
+BagEmptyElement.onload = () => {
+  loaded.BagEmpty = true;
+}
+
+const BagClosedElementBlack = window.document.createElement('img');
+BagClosedElementBlack.src = BagClosedBlack;
+BagClosedElementBlack.onload = () => {
+  loaded.BagClosedBlack = true;
+}
+
+const BagOpenElementBlack = window.document.createElement('img');
+BagOpenElementBlack.src = BagOpenBlack;
+BagOpenElementBlack.onload = () => {
+  loaded.BagOpenBlack = true;
+}
+
+const BagEmptyElementBlack = window.document.createElement('img');
+BagEmptyElementBlack.src = BagEmptyBlack;
+BagEmptyElementBlack.onload = () => {
+  loaded.BagEmptyBlack = true;
+}
+
 function allLoaded() {
   return Object.values(loaded).every(value => value);
 }
 
 export default {
   allLoaded,
+  // Duke tile images
   AssassinFrontElement,
   AssassinBackElement,
   BowmanFrontElement,
@@ -278,5 +327,12 @@ export default {
   SeerBackElement,
   WizardFrontElement,
   WizardBackElement,
+  // bag images
+  BagClosedElement,
+  BagOpenElement,
+  BagEmptyElement,
+  BagClosedElementBlack,
+  BagOpenElementBlack,
+  BagEmptyElementBlack,
 }
 

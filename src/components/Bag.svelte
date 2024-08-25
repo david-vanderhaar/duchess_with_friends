@@ -1,5 +1,5 @@
 <script>
-  import { Image, Rect } from 'svelte-konva';
+  import { Image } from 'svelte-konva';
   import DukeImages from '../assets/duke/index';
   import { getContext } from 'svelte';
 
@@ -9,6 +9,21 @@
   export let config;
   export let updateGameDataItemFromEvent;
   export let sendGameData;
+
+  function openCloseBag(event) {
+    const shape = event.detail.target;
+    const bag = shape.attrs;
+    if (bag.state == 'empty') return;
+
+    const isOpen = bag.state === 'open';
+
+    updateGameDataItemFromEvent({
+      attrs: {
+        state: isOpen ? 'closed' : 'open',
+      },
+      konvaShape: shape,
+    });
+  }
 
   function handleDoubleClickBag(event) {
     const shape = event.detail.target;
@@ -26,7 +41,7 @@
     const tile = bag.tiles[randomIndex];
     const updatedBagTiles = bag.tiles.filter((_, index) => index !== randomIndex);
     const updatedTiles = [...$gameData.tiles, tile];
-
+    const isEmpty = !!!updatedBagTiles.length;
     gameData.set({
       ...$gameData,
       tiles: updatedTiles,
@@ -34,11 +49,22 @@
         if (bag.id !== bagId) return bag;
         return {
           ...bag,
+          state: isEmpty ? 'empty' : bag.state,
           tiles: updatedBagTiles,
         }
       }),
     })
 
+    sendGameData();
+  }
+
+  function handleMouseOut(event) {
+    openCloseBag(event);
+    sendGameData();
+  }
+
+  function handleMouseOver(event) {
+    openCloseBag(event);
     sendGameData();
   }
 
@@ -62,9 +88,14 @@
 
 </script>
 
-<Rect 
-  {config}
+<Image
+  config={{
+    ...config,
+    image: DukeImages[config.images[config.state || 'closed']],
+  }}
   on:dragmove={handleDragMove}
   on:dragend={handleDragEnd}
   on:dblclick={handleDoubleClickBag}
+  on:mouseover={handleMouseOver}
+  on:mouseout={handleMouseOut}
 />
