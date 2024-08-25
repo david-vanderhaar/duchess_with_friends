@@ -80,6 +80,9 @@
     sendGameData();
   }
 
+  console.log('config', config.image);
+  
+
 </script>
 
 <Image 

@@ -38,6 +38,13 @@
     // x and y should be random
     const randomX = Math.random() * 600;
     const randomY = Math.random() * 600;
+
+    // host will be black
+    if (!upsideDown) {
+      image = `${image}Black`;
+      flippedImage = `${flippedImage}Black`;
+    }
+
     let tile = {
       id: uuidv4(),
       x: x || randomX,
@@ -107,8 +114,8 @@
   }
 
   const bags = [
-    createBag({x: 100, y: 100, color: 'red'}),
-    createBag({x: 200, y: 200, color: 'blue', upsideDown: true}),
+    createBag({x: 400, y: 400,}),
+    createBag({x: 200, y: 200, upsideDown: true}),
   ]
 
   const gameData = writable({
