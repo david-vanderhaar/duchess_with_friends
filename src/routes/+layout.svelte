@@ -32,7 +32,7 @@
   <div id="navbar" class="navbar-menu {mobileMenuOpen ? 'is-active' : ''}">
     <div class="navbar-start">
       <a class="navbar-item" href="{base}/play">Host</a>
-      <a class="navbar-item" href="{base}/">Join</a>
+      <!-- <a class="navbar-item" href="{base}/">Join</a> -->
       <!-- show room id if peer is host and is connected -->
       <!-- show room id if peer is connected to another host -->
     </div>

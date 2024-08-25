@@ -8,13 +8,18 @@
 
   function handleJoin() {
     PEER.join(roomId);
-    goto(`${base}/play/`);
+    goto(`${base}/play/${roomId}`);
+  }
+
+  function handleHost() {
+    // PEER.reset();
+    goto(`${base}/play`);
   }
 
 </script>
 
 <div transition:fade class='container'>
-  <a class="button is-primary" href="{base}/play">Host</a>
+  <button class="button is-primary" on:click={handleHost}>Host</button>
   <div class="multiplayer-input">
     <input class="input" type="text" placeholder="Room ID" bind:value={roomId} />
     <button 

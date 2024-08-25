@@ -1,7 +1,8 @@
 <script>
-  import { Stage, Layer, Rect, Image } from 'svelte-konva';
+  import { Stage, Layer } from 'svelte-konva';
   import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+  import gameData from '../../data/gameData';
   import PEER from '../../data/peer';
   import { v4 as uuidv4 } from 'uuid';
   import KonvaGrid from '../KonvaGrid.svelte';
@@ -9,15 +10,16 @@
   import { onMount } from 'svelte';
   import Tile from '../Tile.svelte';
   import Bag from '../Bag.svelte';
-    import { empty, is_empty } from 'svelte/internal';
 
-  let roomId = '';
-  let loaded = false;
-  let window = null;
+  export let roomToJoin;
 
   onMount(() => {
-    window = window;
+    if (roomToJoin) {
+      PEER.join(roomToJoin);
+    }
   });
+
+  let loaded = false;
   
   // check if allLoaded is true by interval until it is true
   const checkLoaded = setInterval(() => {
@@ -118,7 +120,7 @@
     createBag({x: 200, y: 200, upsideDown: true}),
   ]
 
-  const gameData = writable({
+  gameData.set({
     tiles: [
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401}),
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502}),
@@ -171,16 +173,42 @@
     konvaShape.setAttrs({...attrs, image: DukeImages[attrs.image]});
   }
 
-  // hack to read changes to PEER.isHost()
-  let layerConfig = {};
-  setTimeout(() => {
-    if (PEER.getOutgoingConnection() && !PEER.isHost()) {
-      layerConfig = {scaleY: -1, scaleX: -1, x: 600, y: 600}
-    }
-  }, 500);
-  // end hack
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+  }
 
-  $: PEER;
+  function copyToRoomLinkClipboard(roomId) {
+    copyToClipboard(`${window.location.origin}/play/${roomId}`);
+  }
+
+  let layerConfig = {};
+  let hostRoomId;
+  let myRoomId;
+  let joinedRoomId;
+  let hosting = true;
+
+  let peerCheckInterval = setInterval(() => {
+    // console.log('checking peer');
+    
+    hostRoomId = PEER.getHostRoomId();
+    myRoomId = PEER.getMyRoomId();
+    joinedRoomId = PEER.getJoinedRoomId();
+    hosting = PEER.isHost();
+
+    // if (hostRoomId && myRoomId && joinedRoomId) {
+    //   clearInterval(peerCheckInterval);
+    // }
+
+    return () => clearInterval(peerCheckInterval);
+  }, 1000);
+  
+  $: if (hosting) {
+    layerConfig = { scaleY: 1, scaleX: 1, x: 0, y: 0 };
+  } else {
+    layerConfig = { scaleY: -1, scaleX: -1, x: 600, y: 600 };
+  }
+
+  $: hosting = hostRoomId === null || myRoomId === hostRoomId;
 </script>
 
 <Stage config={{ width: window?.innerWidth || 800, height: window?.innerHeight || 800 }}>
@@ -198,36 +226,31 @@
 </Stage>
 <div>
   <div class="multiplayer-container">
-    <div>My Room: {PEER.getMyRoomId()}</div>
-    {#if PEER.getJoinedRoomId()}
-      <div>Connected to {PEER.getJoinedRoomId()}</div>
-    {/if}
-    {#if PEER.isHost()}
-      <div class="host-icon has-background-primary">You are the Host</div>
-    {/if}
+    <div class="is-flex mb-2">
+      <span class='mr-2'>My Room: {myRoomId || 'waiting'}</span>
+      {#if hosting}
+        <button class='button is-small' on:click={() => copyToRoomLinkClipboard(myRoomId)}>Copy Invite Link</button>
+      {/if}
+    </div>
+    <div class="is-flex">
+      {#if hosting}
+        <div class="tag is-medium is-link mr-2">You are the Host</div>
+      {/if}
+      {#if joinedRoomId}
+        <div class='tag is-medium is-success' title={`Connected to ${joinedRoomId}`}>Connected</div>
+      {:else}
+        <div class='tag is-medium is-danger'>Not Connected</div>
+      {/if}
+    </div>
   </div>
 </div>
 
 <style>
-  .multiplayer-input {
-    display: flex;
-    align-items: center;
-  }
-
-  .multiplayer-input input {
-    margin-right: 0.5rem;
-  }
-
   .multiplayer-container {
     position: relative;
     top: 620px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-
-  .host-icon {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    /* align-items: center; */
   }
 </style>
