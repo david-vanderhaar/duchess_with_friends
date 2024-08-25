@@ -75,6 +75,8 @@
       y,
       width: 100,
       height: 100,
+      scaleY: upsideDown ? -1 : 1,
+      scaleX: upsideDown ? -1 : 1,
       images: {
         closed: upsideDown ? 'BagClosedElement' : 'BagClosedElementBlack',
         open: upsideDown ? 'BagOpenElement' : 'BagOpenElementBlack',
