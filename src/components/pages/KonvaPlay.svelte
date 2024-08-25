@@ -1,10 +1,14 @@
 <script>
   import { Stage, Layer, Rect, Image } from 'svelte-konva';
+  import { setContext } from 'svelte';
+	import { writable } from 'svelte/store';
   import PEER from '../../data/peer';
   import { v4 as uuidv4 } from 'uuid';
   import KonvaGrid from '../KonvaGrid.svelte';
   import DukeImages from '../../assets/duke/index';
   import { onMount } from 'svelte';
+  import Tile from '../Tile.svelte';
+  import Bag from '../Bag.svelte';
 
   let roomId = '';
   let loaded = false;
@@ -97,7 +101,7 @@
     createBag({x: 200, y: 200, color: 'blue', upsideDown: true}),
   ]
 
-  let gameData = {
+  const gameData = writable({
     tiles: [
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401}),
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502}),
@@ -107,17 +111,22 @@
       createTile({bagId: bags.at(1), image: 'DukeFrontElement', flippedImage: 'DukeBackElement', x: 293, y: 100, upsideDown: true}),
     ],
     bags,
-  }
+  });
+
+  // set context for gameData for use in child components
+  // via getContext('gameData')
+  setContext('gameData', gameData);
 
   PEER.addOnIncomingDataHandler((data) => {
     // console.log('incoming data handler');
-    gameData = data;
+    // gameData = data;
+    gameData.set(data);
   });
 
   function sendGameData() {
     const connection = PEER.getOutgoingConnection();
     if (connection) {
-      connection.send(gameData);
+      connection.send($gameData);
       // console.log('sending', gameData);
     }
   }
@@ -130,7 +139,8 @@
     const tileId = konvaShape.attrs.id;
     const gameDataPath = konvaShape.attrs.gameDataPath;
 
-    gameData[gameDataPath] = gameData[gameDataPath].map((tile) => {
+    const newGameData = $gameData
+    newGameData[gameDataPath] = newGameData[gameDataPath].map((tile) => {
       if (tile.id !== tileId) return tile;
       return {
         ...tile,
@@ -138,114 +148,10 @@
       };
     });
 
+    gameData.set(newGameData);
+
     if (skipKonvaShapeUpdate) return;
     konvaShape.setAttrs({...attrs, image: DukeImages[attrs.image]});
-  }
-
-  function flipTile(event) {
-    const shape = event.detail.target;
-    const tile = shape.attrs;
-
-    const flipped = !tile.flipped;
-
-    updateGameDataItemFromEvent({
-      attrs: {
-        flipped,
-        image: flipped ? tile.flippedImage : tile.frontImage
-      },
-      konvaShape: shape,
-    });
-  }
-
-  function handleDragEnd(event) {
-    const shape = event.detail.target;
-
-    updateGameDataItemFromEvent({
-      attrs:{
-        x: shape.attrs.x,
-        y: shape.attrs.y,
-      },
-      konvaShape: shape,
-      skipKonvaShapeUpdate: true
-    });
-
-    sendGameData();
-  }
-
-  function handleDragMove(event) {
-    // console.log('drag move', event);
-    handleDragEnd(event);
-  }
-
-  function handleMouseOver(event) {
-    const shape = event.detail.target;
-
-    updateGameDataItemFromEvent({
-      attrs: {
-        shadowBlur: 20,
-        shadowOffset: {
-          x: 10,
-          y: 10
-        },
-      },
-      konvaShape: shape,
-    });
-
-    sendGameData();
-  }
-
-  function handleMouseOut(event) {
-    const shape = event.detail.target;
-
-    updateGameDataItemFromEvent({
-      attrs: {
-        shadowBlur: 16,
-        shadowOffset: {
-          x: 6,
-          y: 6
-        },
-      },
-      konvaShape: shape,
-    });
-    
-    sendGameData();
-  }
-
-  function handleDoubleClick(event) {
-    flipTile(event)
-    sendGameData();
-  }
-
-  function handleDoubleClickBag(event) {
-    const shape = event.detail.target;
-    const bagId = shape.attrs.id;
-
-    // remove first tile from bag
-    // and add it to the tiles array
-    const bag = gameData.bags.find(bag => bag.id === bagId);
-    // if bag is empty, do nothing
-    // TODO: give visual feedback that the bag is empty
-    if (!bag.tiles.length) return;
-
-    // get random tile from bag
-    const randomIndex = Math.floor(Math.random() * bag.tiles.length);
-    const tile = bag.tiles[randomIndex];
-    const updatedBagTiles = bag.tiles.filter((_, index) => index !== randomIndex);
-    const updatedTiles = [...gameData.tiles, tile];
-
-    gameData = {
-      ...gameData,
-      tiles: updatedTiles,
-      bags: gameData.bags.map(bag => {
-        if (bag.id !== bagId) return bag;
-        return {
-          ...bag,
-          tiles: updatedBagTiles,
-        }
-      }),
-    }
-
-    sendGameData();
   }
 
   // hack to read changes to PEER.isHost()
@@ -264,25 +170,11 @@
   <Layer config={layerConfig}>
     <KonvaGrid height={6} width={6} />
     {#if loaded}
-      {#each gameData.tiles as tileConfig}
-        <Image 
-          config={{...tileConfig, image: DukeImages[tileConfig.image]}}
-          on:mousedown={handleMouseOver}
-          on:mouseup={handleMouseOut}
-          on:mouseover={handleMouseOver}
-          on:mouseout={handleMouseOut}
-          on:dragmove={handleDragMove}
-          on:dragend={handleDragEnd}
-          on:dblclick={handleDoubleClick}
-        />
+      {#each $gameData.tiles as tileConfig}
+        <Tile config={tileConfig} {sendGameData} {updateGameDataItemFromEvent} />
       {/each}
-      {#each gameData.bags as bagConfig}
-        <Rect 
-          config={bagConfig}
-          on:dragmove={handleDragMove}
-          on:dragend={handleDragEnd}
-          on:dblclick={handleDoubleClickBag}
-        />
+      {#each $gameData.bags as bagConfig}
+        <Bag config={bagConfig} {sendGameData} {updateGameDataItemFromEvent} />
       {/each}
     {/if}
   </Layer>
