@@ -8,7 +8,7 @@ dependencies:
     specifier: ^9.3.14
     version: 9.3.14
   peerjs:
-    specifier: ^1.5.4
+    specifier: 1.5.4
     version: 1.5.4
   svelte-konva:
     specifier: ^0.3.1

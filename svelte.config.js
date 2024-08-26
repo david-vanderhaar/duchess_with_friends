@@ -7,8 +7,11 @@ const config = {
       fallback: '200.html'
     }),
     paths: {
-      base: process.env.NODE_ENV === "production" ? "/duchess-with-friends" : "",
+      base: process.env.NODE_ENV === "production" ? "/duchess_with_friends" : "",
     },
+    // prerender: {
+    //   handleHttpError: 'warn',
+    // }
   },
 };
 

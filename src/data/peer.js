@@ -3,8 +3,8 @@ import gameDataStore from './gameDataStore';
 import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 
-function startNewPeer(roomId = null) {
-  const peer = new Peer(roomId)
+function startNewPeer() {
+  const peer = new Peer()
 
   const state = {
     myRoomId: null,
