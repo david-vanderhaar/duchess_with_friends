@@ -10,10 +10,12 @@
   import Bag from '../Bag.svelte';
   import gameDataPersistentStore from '../../data/gameDataPersistentStore';
 
+  let roomToJoin = null;
+
   onMount(() => {
     // get roomToJoin from the URL params
     const url = new URL(window.location.href);
-    const roomToJoin = url.searchParams.get('roomId');
+    roomToJoin = url.searchParams.get('roomId');
     if (roomToJoin) {
       PEER.join(roomToJoin);
     }
