@@ -1,10 +1,9 @@
 import Peer from "peerjs";
 import gameDataStore from './gameDataStore';
 import { get } from "svelte/store";
-import { goto } from "$app/navigation";
 
 function startNewPeer() {
-  const peer = new Peer()
+  const peer = new Peer();
 
   const state = {
     myRoomId: null,
@@ -142,16 +141,3 @@ function loadSavedGameData(data) {
 }
 
 export default {...newPeer, loadSavedGameData};
-// export default {
-//   peer,
-//   getMyRoomId: () => state.myRoomId,
-//   getJoinedRoomId: () => state.joinedRoomId,
-//   getHostRoomId: () => state.hostRoomId,
-//   getOutgoingConnection: () => state.outgoingConnection,
-//   getIncomingConnection: () => state.incomingConnection,
-//   setMyRoomId,
-//   setJoinedRoomId,
-//   addOnIncomingDataHandler,
-//   join,
-//   isHost,
-// }

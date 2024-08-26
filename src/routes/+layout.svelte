@@ -3,6 +3,18 @@
   import { page } from "$app/stores";
   import SaveGames from '../components/SaveGames.svelte';
 
+  let PEER;
+  let onPlayPage = false;
+
+  if (typeof window !== 'undefined') {
+    import('../data/peer').then(module => {
+      PEER = module.default;
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    onPlayPage = !params.has('roomId');
+  }
+
   let mobileMenuOpen = false;
 
   function handleClickAway(event) {
@@ -13,9 +25,6 @@
       }
     }
   }
-
-  let onPlayPage = false;
-  $: onPlayPage = $page.route.id === '/play';
 </script>
 
 <nav class="navbar section pb-2 pt-4" role="navigation" aria-label="main navigation">
@@ -45,10 +54,13 @@
     </div>
   </div>
 </nav>
-<main class="section pt-0"><slot></slot></main>
+
+{#if PEER}
+  <main class="section pt-0"><slot></slot></main>
+{:else}
+  <p class="section has-text-centered">Loading...</p>
+{/if}
 <svelte:window on:click={handleClickAway} />
-
-
 
 <style>
   /* smooth route transitions */

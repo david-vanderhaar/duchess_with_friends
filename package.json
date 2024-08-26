@@ -29,7 +29,7 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "konva": "^9.3.14",
-    "peerjs": "1.5.4",
+    "peerjs": "1.4.7",
     "svelte-konva": "^0.3.1"
   }
 }

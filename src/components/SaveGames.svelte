@@ -4,7 +4,14 @@
 // then load them in using PEER.loadSavedGameDataByRoomId
 
 import gameDataPersistentStore from '../data/gameDataPersistentStore';
-import PEER from '../data/peer';
+
+let PEER;
+
+if (typeof window !== 'undefined') {
+  import('../data/peer').then(module => {
+    PEER = module.default;
+  });
+}
 
 let savedGames = [];
 
@@ -27,6 +34,7 @@ $: if (savedGames.length > 20) {
 </script>
 
 <!-- bulma list of navbar-items -->
+{#if PEER}
 <div class="navbar-item has-dropdown is-hoverable">
   <a class="navbar-link">
     Saved Games
@@ -45,3 +53,4 @@ $: if (savedGames.length > 20) {
     {/each}
   </div>
 </div>
+{/if}

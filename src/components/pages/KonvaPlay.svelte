@@ -8,11 +8,12 @@
   import { onMount } from 'svelte';
   import Tile from '../Tile.svelte';
   import Bag from '../Bag.svelte';
-    import gameDataPersistentStore from '../../data/gameDataPersistentStore';
-
-  export let roomToJoin = null;
+  import gameDataPersistentStore from '../../data/gameDataPersistentStore';
 
   onMount(() => {
+    // get roomToJoin from the URL params
+    const url = new URL(window.location.href);
+    const roomToJoin = url.searchParams.get('roomId');
     if (roomToJoin) {
       PEER.join(roomToJoin);
     }
@@ -173,7 +174,9 @@
   }
 
   function copyToRoomLinkClipboard(roomId) {
-    copyToClipboard(`${window.location.origin}/play/${roomId}`);
+    const url = new URL(window.location.href);
+    url.searchParams.set('roomId', roomId);
+    copyToClipboard(url.toString());
   }
 
   let layerConfig = {};
@@ -259,6 +262,5 @@
     top: 620px;
     display: flex;
     flex-direction: column;
-    /* align-items: center; */
   }
 </style>

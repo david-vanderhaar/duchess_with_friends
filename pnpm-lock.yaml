@@ -8,8 +8,8 @@ dependencies:
     specifier: ^9.3.14
     version: 9.3.14
   peerjs:
-    specifier: 1.5.4
-    version: 1.5.4
+    specifier: 1.4.7
+    version: 1.4.7
   svelte-konva:
     specifier: ^0.3.1
     version: 0.3.1(konva@9.3.14)(svelte@3.59.1)
@@ -262,11 +262,6 @@ packages:
       - supports-color
     dev: false
 
-  /@msgpack/msgpack@2.8.0:
-    resolution: {integrity: sha512-h9u4u/jiIRKbq25PM+zymTyW6bhTzELvOoUd+AvYriWOAKpLGnIamaET3pnHYoI5iYphAHBI4ayx0MehR+VVPQ==}
-    engines: {node: '>= 10'}
-    dev: false
-
   /@polka/url@1.0.0-next.25:
     resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
     dev: true
@@ -342,6 +337,12 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@swc/helpers@0.3.17:
+    resolution: {integrity: sha512-tb7Iu+oZ+zWJZ3HJqwx8oNwSDIU440hmVMDPhpACWQWnrZHK99Bxs70gT1L2dnr5Hg50ZRWEFkQCAnOVVV0z1Q==}
+    dependencies:
+      tslib: 2.7.0
+    dev: false
 
   /@types/cookie@0.5.4:
     resolution: {integrity: sha512-7z/eR6O859gyWIAjuvBWFzNURmf2oPBmJlfVWkwehU5nzIyjwBsTh7WMmEEV4JFnHuQ3ex4oyTvfKzcyJVDBNA==}
@@ -884,19 +885,18 @@ packages:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
-  /peerjs-js-binarypack@2.1.0:
-    resolution: {integrity: sha512-YIwCC+pTzp3Bi8jPI9UFKO0t0SLo6xALnHkiNt/iUFmUUZG0fEEmEyFKvjsDKweiFitzHRyhuh6NvyJZ4nNxMg==}
-    engines: {node: '>= 14.0.0'}
+  /peerjs-js-binarypack@1.0.1:
+    resolution: {integrity: sha512-N6aeia3NhdpV7kiGxJV5xQiZZCVEEVjRz2T2C6UZQiBkHWHzUv/oWA4myQLcwBwO8LUoR1KWW5oStvwVesmfCg==}
     dev: false
 
-  /peerjs@1.5.4:
-    resolution: {integrity: sha512-yFsoLMnurJKlQbx6kVSBpOp+AlNldY1JQS2BrSsHLKCZnq6t7saHleuHM5svuLNbQkUJXHLF3sKOJB1K0xulOw==}
-    engines: {node: '>= 14'}
+  /peerjs@1.4.7:
+    resolution: {integrity: sha512-dWE2HIGvJO0Hm8lYHJiO/5OWl8xYtGcAuU08To1HMIfhh76ULzkCS3NIQO/PZm4noO1RhaGTkQaQ6sbAss6/Tg==}
+    engines: {node: '>= 10'}
     dependencies:
-      '@msgpack/msgpack': 2.8.0
+      '@swc/helpers': 0.3.17
       eventemitter3: 4.0.7
-      peerjs-js-binarypack: 2.1.0
-      webrtc-adapter: 9.0.1
+      peerjs-js-binarypack: 1.0.1
+      webrtc-adapter: 7.7.1
     dev: false
 
   /picocolors@1.0.1:
@@ -961,6 +961,13 @@ packages:
       fsevents: 2.3.3
     dev: true
 
+  /rtcpeerconnection-shim@1.2.15:
+    resolution: {integrity: sha512-C6DxhXt7bssQ1nHb154lqeL0SXz5Dx4RczXZu2Aa/L1NJFnEVDxFwCBo3fqtuljhHIGceg5JKBV4XJ0gW5JKyw==}
+    engines: {node: '>=6.0.0', npm: '>=3.10.0'}
+    dependencies:
+      sdp: 2.12.0
+    dev: false
+
   /sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
@@ -972,8 +979,8 @@ packages:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
     dev: false
 
-  /sdp@3.2.0:
-    resolution: {integrity: sha512-d7wDPgDV3DDiqulJjKiV2865wKsJ34YI+NDREbm+FySq6WuKOikwyNQcm+doLAZ1O6ltdO0SeKle2xMpN3Brgw==}
+  /sdp@2.12.0:
+    resolution: {integrity: sha512-jhXqQAQVM+8Xj5EjJGVweuEzgtGWb3tmEEpl3CLP3cStInSbVHSg0QWOGQzNq8pSID4JkpeV2mPqlMDLrm0/Vw==}
     dev: false
 
   /semver@6.3.1:
@@ -1122,6 +1129,10 @@ packages:
       escape-string-regexp: 1.0.5
     dev: true
 
+  /tslib@2.7.0:
+    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
+    dev: false
+
   /undici@5.22.1:
     resolution: {integrity: sha512-Ji2IJhFXZY0x/0tVBXeQwgPlLWw13GVzpsWPQ3rV50IFMMof2I55PZZxtm4P6iNq+L5znYN9nSTAq0ZyE6lSJw==}
     engines: {node: '>=14.0'}
@@ -1196,11 +1207,12 @@ packages:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
     dev: false
 
-  /webrtc-adapter@9.0.1:
-    resolution: {integrity: sha512-1AQO+d4ElfVSXyzNVTOewgGT/tAomwwztX/6e3totvyyzXPvXIIuUUjAmyZGbKBKbZOXauuJooZm3g6IuFuiNQ==}
+  /webrtc-adapter@7.7.1:
+    resolution: {integrity: sha512-TbrbBmiQBL9n0/5bvDdORc6ZfRY/Z7JnEj+EYOD1ghseZdpJ+nF2yx14k3LgQKc7JZnG7HAcL+zHnY25So9d7A==}
     engines: {node: '>=6.0.0', npm: '>=3.10.0'}
     dependencies:
-      sdp: 3.2.0
+      rtcpeerconnection-shim: 1.2.15
+      sdp: 2.12.0
     dev: false
 
   /whatwg-url@5.0.0:

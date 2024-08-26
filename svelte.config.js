@@ -9,9 +9,6 @@ const config = {
     paths: {
       base: process.env.NODE_ENV === "production" ? "/duchess_with_friends" : "",
     },
-    // prerender: {
-    //   handleHttpError: 'warn',
-    // }
   },
 };
 
