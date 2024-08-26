@@ -5,14 +5,14 @@
 
   let PEER;
   let onPlayPage = false;
+  let params;
 
   if (typeof window !== 'undefined') {
     import('../data/peer').then(module => {
       PEER = module.default;
     });
 
-    const params = new URLSearchParams(window.location.search);
-    onPlayPage = !params.has('roomId') && window.location.pathname.endsWith('/play/');
+    params = new URLSearchParams(window.location.search);
   }
 
   let mobileMenuOpen = false;
@@ -25,6 +25,8 @@
       }
     }
   }
+
+  $: onPlayPage = !params?.has('roomId') && $page.route.id === '/play';
 </script>
 
 <nav class="navbar section pb-2 pt-4" role="navigation" aria-label="main navigation">

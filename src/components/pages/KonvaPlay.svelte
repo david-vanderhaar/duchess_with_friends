@@ -230,21 +230,11 @@
   // const CANVAS_WIDTH = window?.innerWidth
   const CANVAS_HEIGHT = 800
   // const CANVAS_HEIGHT = window?.innerHeight
+  let SCALE = 1;
+  if (window.innerWidth < 600 || window.innerHeight < 600) {
+    SCALE = Math.min(window.innerWidth / 800, window.innerHeight / 800);
+  }
 </script>
-
-<Stage config={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
-  <Layer config={layerConfig}>
-    <KonvaGrid height={6} width={6} />
-    {#if loaded}
-      {#each $gameDataStore.tiles as tileConfig}
-        <Tile config={tileConfig} {sendGameData} {updateGameDataItemFromEvent} />
-      {/each}
-      {#each $gameDataStore.bags as bagConfig}
-        <Bag config={bagConfig} {sendGameData} {updateGameDataItemFromEvent} />
-      {/each}
-    {/if}
-  </Layer>
-</Stage>
 <div>
   <div class="multiplayer-container">
     <div class="is-flex mb-2">
@@ -264,13 +254,25 @@
       {/if}
     </div>
   </div>
+  <Stage config={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT, scaleX: SCALE, scaleY: SCALE }}>
+    <Layer config={layerConfig}>
+      <KonvaGrid height={6} width={6} />
+      {#if loaded}
+        {#each $gameDataStore.tiles as tileConfig}
+          <Tile config={tileConfig} {sendGameData} {updateGameDataItemFromEvent} />
+        {/each}
+        {#each $gameDataStore.bags as bagConfig}
+          <Bag config={bagConfig} {sendGameData} {updateGameDataItemFromEvent} />
+        {/each}
+      {/if}
+    </Layer>
+  </Stage>
 </div>
 
 <style>
   .multiplayer-container {
-    position: relative;
-    top: 620px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 1rem;
   }
 </style>
