@@ -15,9 +15,12 @@
   onMount(() => {
     // get roomToJoin from the URL params
     const url = new URL(window.location.href);
-    roomToJoin = url.searchParams.get('roomId');
-    if (roomToJoin) {
+    const roomToJoinParam = url.searchParams.get('roomId');
+    if (roomToJoinParam) {
+      roomToJoin = roomToJoinParam;
       PEER.join(roomToJoin);
+    } else {
+      PEER.getOutgoingConnection()?.close();
     }
   });
 

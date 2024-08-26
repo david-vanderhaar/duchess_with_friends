@@ -12,7 +12,7 @@
     });
 
     const params = new URLSearchParams(window.location.search);
-    onPlayPage = !params.has('roomId');
+    onPlayPage = !params.has('roomId') && window.location.pathname.endsWith('/play/');
   }
 
   let mobileMenuOpen = false;

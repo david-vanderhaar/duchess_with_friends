@@ -2,6 +2,7 @@ import Peer from "peerjs";
 import gameDataStore from './gameDataStore';
 import { get } from "svelte/store";
 
+let newPeer;
 function startNewPeer() {
   const peer = new Peer();
 
@@ -81,6 +82,8 @@ function startNewPeer() {
     conn.on('close', function() {
       // setIncomingConnection(null);
       console.log('Disconnected from peer');
+      state.outgoingConnection?.close();
+      setOutgoingConnection(null);
     })
   });
 
@@ -108,7 +111,7 @@ function startNewPeer() {
     }
   }
 
-  return {
+  const freshPeer = {
     peer,
     getMyRoomId: () => state.myRoomId,
     getJoinedRoomId: () => state.joinedRoomId,
@@ -123,9 +126,12 @@ function startNewPeer() {
     join,
     isHost,
   }
+
+  newPeer = freshPeer;
+  return freshPeer;
 }
 
-let newPeer = startNewPeer()
+newPeer = startNewPeer()
 function loadSavedGameData(data) {
   // const savedRoomId = data.hostRoomId;
   // // prev incomingDataHandlers
@@ -140,4 +146,4 @@ function loadSavedGameData(data) {
   alert('Game loaded. Host should send a new link to other players');
 }
 
-export default {...newPeer, loadSavedGameData};
+export default {...newPeer, loadSavedGameData, startNewPeer};
