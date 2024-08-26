@@ -1,7 +1,7 @@
 <script>
-  import { SvelteToast } from '@zerodevx/svelte-toast'
   import { base } from "$app/paths";
-  import PEER from '../data/peer';
+  import { page } from "$app/stores";
+  import SaveGames from '../components/SaveGames.svelte';
 
   let mobileMenuOpen = false;
 
@@ -13,6 +13,9 @@
       }
     }
   }
+
+  let onPlayPage = false;
+  $: onPlayPage = $page.route.id === '/play';
 </script>
 
 <nav class="navbar section pb-2 pt-4" role="navigation" aria-label="main navigation">
@@ -31,15 +34,18 @@
 
   <div id="navbar" class="navbar-menu {mobileMenuOpen ? 'is-active' : ''}">
     <div class="navbar-start">
-      <a class="navbar-item" href="{base}/play">Host</a>
-      <!-- <a class="navbar-item" href="{base}/">Join</a> -->
-      <!-- show room id if peer is host and is connected -->
-      <!-- show room id if peer is connected to another host -->
+      <a class="navbar-item" href="{base}/play">Play</a>
+      <!-- separator -->
+      <hr class="navbar-divider" />
+      <!-- only show SaveGames if on /play -->
+      {#if onPlayPage}
+        <SaveGames />
+      {/if}
+      
     </div>
   </div>
 </nav>
 <main class="section pt-0"><slot></slot></main>
-<SvelteToast options={{ reversed: true, intro: { y: 96 } }} />
 <svelte:window on:click={handleClickAway} />
 
 

@@ -18,7 +18,7 @@
 </script>
 
 <div transition:fade class='container'>
-  <button class="button is-primary" on:click={handleHost}>Host</button>
+  <button class="button is-primary mb-2" on:click={handleHost}>Play</button>
   <div class="multiplayer-input">
     <input class="input" type="text" placeholder="Room ID" bind:value={roomId} />
     <button 

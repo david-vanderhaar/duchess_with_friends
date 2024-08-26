@@ -204,43 +204,19 @@
   }
   $: hosting = hostRoomId === null || myRoomId === hostRoomId;
 
-  // if you are not the joiner, save game data to persistent store
-  gameDataStore.subscribe((value) => {
-    if (roomToJoin === null) {
+  // save game data to persistent store every 500ms
+  const saveGameInterval = setInterval(() => {
+    if (roomToJoin === null)  {
       gameDataPersistentStore.addOrUpdate({
         uuid: myRoomId,
         hostRoomId: myRoomId,
-        gameData: value,
+        gameData: $gameDataStore,
         lastModified: new Date(),
       })
     }
-  });
 
-  // if hosting, we want to send gameDataStore to gameDataPersistentStore on every change to gameDataStore
-  // gameDataStore.subscribe((value) => {
-  //   if (hostRoomId !== null && myRoomId === hostRoomId) {
-  //     gameDataPersistentStore.addOrUpdate({
-  //       uuid: hostRoomId,
-  //       hostRoomId,
-  //       gameData: value,
-  //       lastModified: new Date(),
-  //     })
-  //   }
-  // });
-
-  // save game data to persistent store every 500ms
-  // const saveGameInterval = setInterval(() => {
-  //   if (hostRoomId !== null && myRoomId === hostRoomId) {
-  //     gameDataPersistentStore.addOrUpdate({
-  //       uuid: hostRoomId,
-  //       hostRoomId,
-  //       gameData: $gameDataStore,
-  //       lastModified: new Date(),
-  //     })
-  //   }
-
-  //   return () => clearInterval(saveGameInterval);
-  // }, 500);
+    return () => clearInterval(saveGameInterval);
+  }, 5000);
 </script>
 
 <Stage config={{ width: window?.innerWidth || 800, height: window?.innerHeight || 800 }}>
