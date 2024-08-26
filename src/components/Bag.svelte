@@ -93,6 +93,7 @@
   on:dragmove={handleDragMove}
   on:dragend={handleDragEnd}
   on:dblclick={handleDoubleClickBag}
+  on:dbltap={handleDoubleClickBag}
   on:mouseover={handleMouseOver}
   on:mouseout={handleMouseOut}
 />

@@ -225,9 +225,14 @@
 
     return () => clearInterval(saveGameInterval);
   }, 5000);
+
+  const CANVAS_WIDTH = 800
+  // const CANVAS_WIDTH = window?.innerWidth
+  const CANVAS_HEIGHT = 800
+  // const CANVAS_HEIGHT = window?.innerHeight
 </script>
 
-<Stage config={{ width: window?.innerWidth || 800, height: window?.innerHeight || 800 }}>
+<Stage config={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
   <Layer config={layerConfig}>
     <KonvaGrid height={6} width={6} />
     {#if loaded}

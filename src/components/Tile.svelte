@@ -94,4 +94,5 @@
   on:dragmove={handleDragMove}
   on:dragend={handleDragEnd}
   on:dblclick={handleDoubleClick}
+  on:dbltap={handleDoubleClick}
 />
