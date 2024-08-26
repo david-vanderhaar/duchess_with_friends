@@ -1,5 +1,5 @@
 import Peer from "peerjs";
-import gameData from './gameData';
+import gameDataStore from './gameDataStore';
 import { get } from "svelte/store";
 
 const peer = new Peer();
@@ -58,9 +58,9 @@ peer.on('connection', function(conn) {
         setHostRoomId(state.myRoomId);
         // send gameData
         console.log('Sending gameData');
-        newConnection.send(get(gameData))
+        newConnection.send(get(gameDataStore))
         
-        // newConnection.send(gameData);
+        // newConnection.send(gameDataStore);
         console.log(`Connected to ${incomingRoomId}`);
       });
 
@@ -120,14 +120,4 @@ export default {
   addOnIncomingDataHandler,
   join,
   isHost,
-  reset: () => {
-    setJoinedRoomId(null);
-    setHostRoomId(null);
-    state?.outgoingConnection?.close();
-    state?.incomingConnection?.close();
-    setOutgoingConnection(null);
-    setIncomingConnection(null);
-    state.hosting = true;
-  },
-  // ...state,
 }

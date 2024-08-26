@@ -1,8 +1,6 @@
 <script>
   import { Stage, Layer } from 'svelte-konva';
-  import { setContext } from 'svelte';
-	import { writable } from 'svelte/store';
-  import gameData from '../../data/gameData';
+  import gameDataStore from '../../data/gameDataStore';
   import PEER from '../../data/peer';
   import { v4 as uuidv4 } from 'uuid';
   import KonvaGrid from '../KonvaGrid.svelte';
@@ -10,8 +8,9 @@
   import { onMount } from 'svelte';
   import Tile from '../Tile.svelte';
   import Bag from '../Bag.svelte';
+    import gameDataPersistentStore from '../../data/gameDataPersistentStore';
 
-  export let roomToJoin;
+  export let roomToJoin = null;
 
   onMount(() => {
     if (roomToJoin) {
@@ -120,7 +119,7 @@
     createBag({x: 200, y: 200, upsideDown: true}),
   ]
 
-  gameData.set({
+  gameDataStore.set({
     tiles: [
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401}),
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502}),
@@ -132,21 +131,17 @@
     bags,
   });
 
-  // set context for gameData for use in child components
-  // via getContext('gameData')
-  setContext('gameData', gameData);
-
   PEER.addOnIncomingDataHandler((data) => {
     // console.log('incoming data handler');
     // gameData = data;
-    gameData.set(data);
+    gameDataStore.set(data);
   });
 
   function sendGameData() {
     const connection = PEER.getOutgoingConnection();
     if (connection) {
-      connection.send($gameData);
-      // console.log('sending', gameData);
+      connection.send($gameDataStore);
+      // console.log('sending', gameDataStore);
     }
   }
 
@@ -158,7 +153,7 @@
     const tileId = konvaShape.attrs.id;
     const gameDataPath = konvaShape.attrs.gameDataPath;
 
-    const newGameData = $gameData
+    const newGameData = $gameDataStore
     newGameData[gameDataPath] = newGameData[gameDataPath].map((tile) => {
       if (tile.id !== tileId) return tile;
       return {
@@ -167,7 +162,7 @@
       };
     });
 
-    gameData.set(newGameData);
+    gameDataStore.set(newGameData);
 
     if (skipKonvaShapeUpdate) return;
     konvaShape.setAttrs({...attrs, image: DukeImages[attrs.image]});
@@ -207,18 +202,55 @@
   } else {
     layerConfig = { scaleY: -1, scaleX: -1, x: 600, y: 600 };
   }
-
   $: hosting = hostRoomId === null || myRoomId === hostRoomId;
+
+  // if you are not the joiner, save game data to persistent store
+  gameDataStore.subscribe((value) => {
+    if (roomToJoin === null) {
+      gameDataPersistentStore.addOrUpdate({
+        uuid: myRoomId,
+        hostRoomId: myRoomId,
+        gameData: value,
+        lastModified: new Date(),
+      })
+    }
+  });
+
+  // if hosting, we want to send gameDataStore to gameDataPersistentStore on every change to gameDataStore
+  // gameDataStore.subscribe((value) => {
+  //   if (hostRoomId !== null && myRoomId === hostRoomId) {
+  //     gameDataPersistentStore.addOrUpdate({
+  //       uuid: hostRoomId,
+  //       hostRoomId,
+  //       gameData: value,
+  //       lastModified: new Date(),
+  //     })
+  //   }
+  // });
+
+  // save game data to persistent store every 500ms
+  // const saveGameInterval = setInterval(() => {
+  //   if (hostRoomId !== null && myRoomId === hostRoomId) {
+  //     gameDataPersistentStore.addOrUpdate({
+  //       uuid: hostRoomId,
+  //       hostRoomId,
+  //       gameData: $gameDataStore,
+  //       lastModified: new Date(),
+  //     })
+  //   }
+
+  //   return () => clearInterval(saveGameInterval);
+  // }, 500);
 </script>
 
 <Stage config={{ width: window?.innerWidth || 800, height: window?.innerHeight || 800 }}>
   <Layer config={layerConfig}>
     <KonvaGrid height={6} width={6} />
     {#if loaded}
-      {#each $gameData.tiles as tileConfig}
+      {#each $gameDataStore.tiles as tileConfig}
         <Tile config={tileConfig} {sendGameData} {updateGameDataItemFromEvent} />
       {/each}
-      {#each $gameData.bags as bagConfig}
+      {#each $gameDataStore.bags as bagConfig}
         <Bag config={bagConfig} {sendGameData} {updateGameDataItemFromEvent} />
       {/each}
     {/if}

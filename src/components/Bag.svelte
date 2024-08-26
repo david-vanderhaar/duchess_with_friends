@@ -1,10 +1,7 @@
 <script>
   import { Image } from 'svelte-konva';
   import DukeImages from '../assets/duke/index';
-  import { getContext } from 'svelte';
-
-// Retrieve user store from context
-  const gameData = getContext('gameData');
+  import gameDataStore from '../data/gameDataStore';
 
   export let config;
   export let updateGameDataItemFromEvent;
@@ -31,7 +28,7 @@
 
     // remove first tile from bag
     // and add it to the tiles array
-    const bag = $gameData.bags.find(bag => bag.id === bagId);
+    const bag = $gameDataStore.bags.find(bag => bag.id === bagId);
     // if bag is empty, do nothing
     // TODO: give visual feedback that the bag is empty
     if (!bag.tiles.length) return;
@@ -40,12 +37,12 @@
     const randomIndex = Math.floor(Math.random() * bag.tiles.length);
     const tile = bag.tiles[randomIndex];
     const updatedBagTiles = bag.tiles.filter((_, index) => index !== randomIndex);
-    const updatedTiles = [...$gameData.tiles, tile];
+    const updatedTiles = [...$gameDataStore.tiles, tile];
     const isEmpty = !!!updatedBagTiles.length;
-    gameData.set({
-      ...$gameData,
+    gameDataStore.set({
+      ...$gameDataStore,
       tiles: updatedTiles,
-      bags: $gameData.bags.map(bag => {
+      bags: $gameDataStore.bags.map(bag => {
         if (bag.id !== bagId) return bag;
         return {
           ...bag,

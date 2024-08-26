@@ -19,7 +19,18 @@ const createBrowserWritable = (key, defaultValue) => {
   return {
     subscribe,
     update: (items) => update(() => items),
+    updateById: (id, updatedItem) => {
+      update((items) => items.map(item => item.uuid == id ? {...item, ...updatedItem} : item))
+    },
     add: (item) => update((items) => [...items, {uuid: uuidv4(), ...item}]),
+    addOrUpdate: (item) => {
+      const existingItem = get().find(existingItem => existingItem.uuid == item.uuid)
+      if (existingItem) {
+        update((items) => items.map(existingItem => existingItem.uuid == item.uuid ? {...existingItem, ...item} : existingItem))
+      } else {
+        update((items) => [...items, {uuid: uuidv4(), ...item}])
+      }
+    },
     getById: (id) => get().find(item => item.uuid == id),
     delete: (id) => update((items) => items.filter(item => item.uuid != id)),
     edit: (id, updatedItem) => {

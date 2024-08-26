@@ -12,7 +12,6 @@
   }
 
   function handleHost() {
-    // PEER.reset();
     goto(`${base}/play`);
   }
 
