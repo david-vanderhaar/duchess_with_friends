@@ -46,9 +46,9 @@
 
   function stepTimer(side) {
     if (side === 'black') {
-      blackTime = Math.max(0, blackTime - 1);
+      blackTime = Math.max(0, blackTime - 200);
     } else if (side === 'white') {
-      whiteTime = Math.max(0, whiteTime - 1);
+      whiteTime = Math.max(0, whiteTime - 200);
     }
     if (blackTime === 0 || whiteTime === 0) {
       if (interval) clearInterval(interval);
@@ -112,10 +112,18 @@
   }
 </script>
 
-<div class="timer-container has-background-dark">
+<div 
+  class="timer-container"
+  class:has-background-dark={whiteTime > 0 && blackTime > 0}
+  class:has-background-danger={whiteTime <= 0 || blackTime <= 0}
+>
   <div class="field has-addons">
     <p class="control">
-      <button class="button is-normal is-black" on:click={() => startTimer('white')}>
+      <button 
+        class="button is-normal is-black"
+        class:is-danger={blackTime <= 0}
+        on:click={() => startTimer('white')}
+      >
         <span>{formatTime(blackTime)}</span>
       </button>
     </p>
@@ -130,7 +138,11 @@
       </button>
     </p>
     <p class="control">
-      <button class="button is-normal is-white" on:click={() => startTimer('black')} >
+      <button
+        class="button is-normal is-white"
+        class:is-danger={whiteTime <= 0}
+        on:click={() => startTimer('black')}
+      >
         <span>{formatTime(whiteTime)}</span>
       </button>
     </p>
@@ -143,11 +155,6 @@
     padding: 1rem;
     border-radius: 5px;
     margin-bottom: 1rem;
-    /* padding: 1rem; */
-    /* display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 20px; */
   }
 
 </style>
