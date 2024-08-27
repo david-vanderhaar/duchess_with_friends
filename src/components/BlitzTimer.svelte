@@ -46,9 +46,9 @@
 
   function stepTimer(side) {
     if (side === 'black') {
-      blackTime = Math.max(0, blackTime - 200);
+      blackTime = Math.max(0, blackTime - 1);
     } else if (side === 'white') {
-      whiteTime = Math.max(0, whiteTime - 200);
+      whiteTime = Math.max(0, whiteTime - 1);
     }
     if (blackTime === 0 || whiteTime === 0) {
       if (interval) clearInterval(interval);
