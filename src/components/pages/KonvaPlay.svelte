@@ -9,6 +9,7 @@
   import Tile from '../Tile.svelte';
   import Bag from '../Bag.svelte';
   import gameDataPersistentStore from '../../data/gameDataPersistentStore';
+    import BlitzTimer from '../BlitzTimer.svelte';
 
   let roomToJoin = null;
 
@@ -126,6 +127,11 @@
   ]
 
   gameDataStore.set({
+    timer: {
+      blackTime: 300, // 5 minutes in seconds
+      whiteTime: 300, // 5 minutes in seconds
+      activeSide: null,
+    },
     tiles: [
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 204, y: 401}),
       createTile({bagId: bags.at(0), image: 'FootmanFrontElement', flippedImage: 'FootmanBackElement', x: 301, y: 502}),
@@ -254,6 +260,7 @@
       {/if}
     </div>
   </div>
+  <BlitzTimer {sendGameData} {hosting} />
   <Stage config={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT, scaleX: SCALE, scaleY: SCALE }}>
     <Layer config={layerConfig}>
       <KonvaGrid height={6} width={6} />
